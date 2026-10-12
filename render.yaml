@@ -1,0 +1,39 @@
+services:
+  # Backend Web Service (Spring Boot + Docker)
+  - type: web
+    name: plm-backend
+    runtime: docker
+    rootDir: backend
+    plan: free
+    region: singapore
+    envVars:
+      - key: DB_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        fromStaticSite:
+          name: plm-frontend
+          property: url
+
+  # Frontend Static Site (React + Vite)
+  - type: static
+    name: plm-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: plm-backend
+          property: url
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
