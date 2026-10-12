@@ -49,12 +49,24 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
+    @org.springframework.beans.factory.annotation.Value("${FRONTEND_URL:http://localhost:5173}")
+    private String frontendUrl;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173"));
+        java.util.Set<String> allowedOrigins = new java.util.HashSet<>(List.of(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173"
+        ));
+        if (frontendUrl != null && !frontendUrl.isBlank()) {
+            allowedOrigins.add(frontendUrl.trim().replaceAll("/+$", ""));
+        }
+        configuration.setAllowedOrigins(new java.util.ArrayList<>(allowedOrigins));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -70,6 +82,10 @@ public class SecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Allow OPTIONS preflight calls for CORS
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Render Public Health Check
+                .requestMatchers("/actuator/health").permitAll()
                 // Public auth endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 // Dropdown reads for materials and sources
