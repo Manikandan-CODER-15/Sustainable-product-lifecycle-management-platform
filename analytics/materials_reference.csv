@@ -1,0 +1,11 @@
+name,type_or_grade,recyclability_pct,recycled_content_pct,disassembly_ease,reusability_pct,repairability,lifetime_years,hazardous
+Aluminium,Alloy 6061,90.0,45.0,8,70.0,7,25.0,False
+Steel,Structural Low-Carbon,85.0,40.0,8,65.0,8,30.0,False
+Copper,Electrolytic Tough Pitch,80.0,30.0,7,60.0,7,25.0,False
+Glass,Soda-Lime Container,95.0,50.0,9,80.0,4,15.0,False
+PET Plastic,Bottle Grade rPET compatible,75.0,25.0,7,50.0,5,8.0,False
+ABS Plastic,Injection Molding Grade,45.0,10.0,5,40.0,5,10.0,False
+Printed Circuit Board (PCB),FR4 Multi-layer,20.0,5.0,2,10.0,3,7.0,True
+Lithium-ion Battery Cell,NMC 18650,35.0,10.0,3,20.0,2,5.0,True
+Paper / Cardboard,Corrugated Packaging,80.0,60.0,9,40.0,3,2.0,False
+Rubber,Vulcanized Natural/Synthetic,25.0,5.0,4,20.0,3,10.0,False

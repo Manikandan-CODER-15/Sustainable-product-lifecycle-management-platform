@@ -1,0 +1,44 @@
+# Environment variables (NEVER COMMIT REAL SECRETS)
+.env
+*.env.local
+
+# Compiled Java / Maven target directories
+target/
+*.class
+*.jar
+*.war
+
+# Node / React dependencies and build outputs
+node_modules/
+dist/
+.vite/
+build/
+
+# IDE / Editor configuration
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Other env files (keep the example file)
+.env.*
+!.env.example
+
+# Spring Boot local config (may hold the database password)
+application-local.properties
+application-local.yml
+
+# Python / Jupyter (analytics folder)
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+venv/

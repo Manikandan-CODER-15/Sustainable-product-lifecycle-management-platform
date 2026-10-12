@@ -1,0 +1,16 @@
+name,type_or_grade,recyclability_pct,recycled_content_pct,disassembly_ease,reusability_pct,repairability,lifetime_years,hazardous,notes
+Aluminium 6061-T6,Structural Extrusion,92.0,50.0,8,75.0,7,30.0,False,High scrap value and energy-efficient remelting stream
+Low-Carbon Sheet Steel,Deep Drawing Grade,88.0,45.0,9,70.0,8,35.0,False,Magnetic separation ensures high closed-loop recovery
+Electrolytic Copper ETP,Electrical Busbar,82.0,35.0,7,65.0,7,28.0,False,Standard electrical scrap channel with high purity retention
+Soda-Lime Glass,Container Packaging,96.0,55.0,9,85.0,4,18.0,False,Infinitely recyclable container material with high thermal stability
+Polyethylene Terephthalate (PET),Clear Bottle Grade,78.0,30.0,8,55.0,5,10.0,False,Food-grade mechanical recycling supported widely
+High-Density Polyethylene (HDPE),Blow Molding,74.0,25.0,7,50.0,5,12.0,False,High chemical resistance; standardized recycling stream
+Polypropylene (PP),Homopolymer,68.0,20.0,7,45.0,5,10.0,False,Low density thermoplastic with emerging mechanical recycling
+ABS Polymer,Impact Resistant Housing,48.0,12.0,5,38.0,5,12.0,False,Engineering plastic with moderate thermal degradation on remelting
+Polycarbonate (PC),Optical Enclosure Grade,52.0,15.0,6,42.0,6,15.0,False,High impact transparency; requires clean feedstocks
+Printed Circuit Board (PCB),FR-4 Multi-Layer,22.0,5.0,2,10.0,3,7.0,True,Contains brominated flame retardants and hazardous trace metals
+Li-Ion Battery Cell (NMC),18650 Cylindrical,38.0,10.0,3,20.0,2,5.0,True,Complex hydrometallurgical recycling needed for lithium/cobalt
+Corrugated Cardboard,Kraftliner Fluting,85.0,65.0,9,40.0,3,2.0,False,Renewable pulp-derived fiber with rapid biodegradability
+Natural Vulcanized Rubber,NR Compound,28.0,5.0,4,22.0,3,10.0,False,Cross-linked polymer with devulcanization recovery barriers
+Silicone Elastomer,Food Grade Molded,35.0,8.0,6,30.0,4,15.0,False,High heat resistance but niche chemical recycling stream
+Polylactic Acid (PLA),Bio-based Corn Derived,45.0,0.0,7,25.0,3,3.0,False,Industrial composting polymer; interferes with standard PET streams
