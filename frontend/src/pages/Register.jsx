@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { Leaf, AlertCircle, ArrowRight, Lock, Mail, User } from 'lucide-react';
+import { Leaf, AlertCircle, ArrowRight, Lock, Mail, User, Eye, EyeOff } from 'lucide-react';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -64,7 +65,7 @@ const Register = () => {
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Mani"
+                placeholder="Enter your full name"
                 className="input-field pl-11"
               />
             </div>
@@ -79,7 +80,7 @@ const Register = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="mani@plm.local"
+                placeholder="Enter your email address"
                 className="input-field pl-11"
               />
             </div>
@@ -90,13 +91,22 @@ const Register = () => {
             <div className="relative">
               <Lock className="w-5 h-5 absolute left-3.5 top-3 text-slate-400" />
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="At least 6 characters"
-                className="input-field pl-11"
+                className="input-field pl-11 pr-11"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2.5 p-1 text-slate-400 hover:text-brand-600 focus:outline-none rounded-lg transition"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                title={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4 text-slate-600" /> : <Eye className="w-4 h-4" />}
+              </button>
             </div>
           </div>
 
