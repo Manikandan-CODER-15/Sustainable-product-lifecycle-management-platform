@@ -28,7 +28,26 @@ VALUES
 
 -- Electronics & Energy Storage
 ('Silicon Wafer (Solar / Semiconductor)', 'Monocrystalline PV Grade', 50.0, 5.0, 4, 30.0, 3, 25.0, FALSE, 1, 'High embodied energy; valuable silver and silicon reclaimed at EOL'),
-('LFP Battery Cell (LiFePO4)', 'Prismatic Energy Storage', 45.0, 10.0, 4, 35.0, 3, 10.0, FALSE, 1, 'Cobalt/Nickel free, safer chemistry with high cycle durability')
+('LFP Battery Cell (LiFePO4)', 'Prismatic Energy Storage', 45.0, 10.0, 4, 35.0, 3, 10.0, FALSE, 1, 'Cobalt/Nickel free, safer chemistry with high cycle durability'),
+
+-- Polyvinyl Chloride (PVC) Family
+('PVC (Polyvinyl Chloride) - Rigid (uPVC)', 'Rigid Pipe, Conduit & Window Profile Grade', 35.0, 15.0, 7, 40.0, 5, 35.0, FALSE, 1, 'Unplasticized rigid PVC with high chemical and UV resistance for infrastructure and construction'),
+('PVC (Polyvinyl Chloride) - Flexible (pPVC)', 'Plasticized Cable Sheathing & Flooring Grade', 15.0, 5.0, 5, 20.0, 3, 15.0, TRUE, 1, 'Flexible vinyl with phthalate plasticizers and chlorine content complicating thermal recovery'),
+('PVC Foam Board (Expanded Sintra / Celuka)', 'Lightweight Signage & Display Structural Grade', 10.0, 0.0, 6, 25.0, 4, 10.0, FALSE, 1, 'Closed-cell foamed PVC substrate commonly used in commercial displays and exhibit graphics'),
+('CPVC (Chlorinated Polyvinyl Chloride)', 'High-Temperature Potable Water & Industrial Grade', 25.0, 5.0, 7, 30.0, 5, 40.0, FALSE, 1, 'Chlorinated PVC suitable for hot corrosive fluid handling up to 93°C'),
+('PVC Synthetic Leather (Vinyl / Faux Leather)', 'Textile-Backed Upholstery Grade', 5.0, 0.0, 3, 15.0, 4, 7.0, TRUE, 1, 'Multi-layer textile and PVC composite with severe end-of-life separation hurdles'),
+
+-- Additional Commodity Polymers & Foams
+('Polystyrene (PS) - General Purpose (GPPS)', 'Clear Rigid Injection Molding Grade', 35.0, 10.0, 7, 30.0, 4, 8.0, FALSE, 1, 'Brittle clear thermoplastic used in laboratory ware and cosmetic containers'),
+('Expanded Polystyrene (EPS / Styrofoam)', 'Shock-Absorbing Protective Packaging Grade', 12.0, 5.0, 6, 15.0, 2, 3.0, FALSE, 1, 'High-volume low-density foam; challenging transport economics for recycling'),
+('High Impact Polystyrene (HIPS)', 'Rubber-Modified Thermoforming Grade', 40.0, 15.0, 7, 35.0, 4, 10.0, FALSE, 1, 'Tough impact-resistant styrene commonly used for appliance linings and signs'),
+('Thermoplastic Polyurethane (TPU)', 'High-Elasticity Injection & Extrusion Grade', 55.0, 15.0, 6, 45.0, 5, 12.0, FALSE, 1, 'Melt-processable elastomer bridging rubber and thermoplastics; recyclable via re-granulation'),
+('Silicone Rubber (PDMS)', 'High-Temperature Food & Medical Grade', 20.0, 0.0, 7, 55.0, 6, 20.0, FALSE, 1, 'Thermoset inorganic polymer with extreme thermal stability; requires catalytic depolymerization'),
+
+-- Advanced Composites & Light Alloys
+('Carbon Fiber Reinforced Polymer (CFRP)', 'Epoxy Matrix Aerospace & Automotive Prepreg', 25.0, 5.0, 3, 20.0, 4, 30.0, FALSE, 1, 'High specific strength; requires thermal pyrolysis or solvolysis to reclaim virgin fibers'),
+('Zinc Alloy (Zamak 3)', 'Precision Die-Casting Alloy', 90.0, 35.0, 8, 75.0, 6, 25.0, FALSE, 1, 'Low melting point die-casting alloy with high recyclability and minimal metal loss'),
+('Galvanized Steel (Hot-Dip)', 'HDG Structural Zinc-Coated Sheet', 88.0, 40.0, 8, 70.0, 7, 35.0, FALSE, 1, 'Zinc-coated carbon steel; zinc volatilizes into EAF baghouse dust for recovery during smelting')
 ON CONFLICT (name) DO UPDATE SET
     type_or_grade = EXCLUDED.type_or_grade,
     recyclability_pct = EXCLUDED.recyclability_pct,
