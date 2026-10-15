@@ -8,6 +8,8 @@ import com.plm.entity.ScoringSettings;
 import com.plm.exception.BadRequestException;
 import com.plm.repository.ScoringSettingsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,9 +22,15 @@ public class ScoringService {
 
     private final ScoringSettingsRepository scoringSettingsRepository;
 
+    @Cacheable("scoringSettings")
     public ScoringSettings getActiveSettings() {
         return scoringSettingsRepository.findFirstByOrderByIdAsc()
                 .orElseGet(this::getDefaultSettings);
+    }
+
+    @CacheEvict(value = "scoringSettings", allEntries = true)
+    public void evictSettingsCache() {
+        // Called when settings are updated to invalidate cache
     }
 
     public ScoreCalculationResult calculate(List<MaterialScoreItem> items) {

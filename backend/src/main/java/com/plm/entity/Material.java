@@ -44,7 +44,7 @@ public class Material {
     @Builder.Default
     private boolean hazardous = false;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "source_id")
     private Source source;
 

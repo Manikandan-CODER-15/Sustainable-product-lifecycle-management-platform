@@ -56,16 +56,24 @@ public class ProductService {
             }
         }
 
-        // 2. Fetch materials from DB & build score calculation input
-        List<MaterialScoreItem> scoreItems = new ArrayList<>();
-        Map<Long, Material> materialCache = new HashMap<>();
+        // 2. Batch-fetch all materials from DB in one query (fixes N+1)
+        List<Long> materialIds = dto.getMaterials().stream()
+                .map(ProductMaterialRequestDto::getMaterialId)
+                .collect(Collectors.toList());
+        List<Material> materials = materialRepository.findAllById(materialIds);
+        Map<Long, Material> materialCache = materials.stream()
+                .collect(Collectors.toMap(Material::getId, m -> m));
 
-        for (ProductMaterialRequestDto row : dto.getMaterials()) {
-            Material material = materialRepository.findById(row.getMaterialId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + row.getMaterialId()));
-            materialCache.put(material.getId(), material);
-            scoreItems.add(new MaterialScoreItem(material, row.getWeightG()));
+        // Validate all materials were found
+        for (Long mid : materialIds) {
+            if (!materialCache.containsKey(mid)) {
+                throw new ResourceNotFoundException("Material not found with id: " + mid);
+            }
         }
+
+        List<MaterialScoreItem> scoreItems = dto.getMaterials().stream()
+                .map(row -> new MaterialScoreItem(materialCache.get(row.getMaterialId()), row.getWeightG()))
+                .collect(Collectors.toList());
 
         // 3. Compute real-time score
         ScoreCalculationResult calcResult = scoringService.calculate(scoreItems);
@@ -82,15 +90,15 @@ public class ProductService {
 
         Product savedProduct = productRepository.save(product);
 
-        // 5. Save ProductMaterial rows
-        for (ProductMaterialRequestDto row : dto.getMaterials()) {
-            ProductMaterial pm = ProductMaterial.builder()
-                    .product(savedProduct)
-                    .material(materialCache.get(row.getMaterialId()))
-                    .weightG(row.getWeightG())
-                    .build();
-            productMaterialRepository.save(pm);
-        }
+        // 5. Batch-save all ProductMaterial rows in one operation (fixes N+1 writes)
+        List<ProductMaterial> pmList = dto.getMaterials().stream()
+                .map(row -> ProductMaterial.builder()
+                        .product(savedProduct)
+                        .material(materialCache.get(row.getMaterialId()))
+                        .weightG(row.getWeightG())
+                        .build())
+                .collect(Collectors.toList());
+        productMaterialRepository.saveAll(pmList);
 
         return toResponseDto(savedProduct, calcResult);
     }
@@ -142,21 +150,28 @@ public class ProductService {
             }
         }
 
-        // Remove old rows and flush immediately before inserting updated rows
+        // Remove old rows with single bulk DELETE statement (instead of N individual DELETEs)
         List<ProductMaterial> existing = productMaterialRepository.findByProductId(id);
-        productMaterialRepository.deleteAll(existing);
+        productMaterialRepository.deleteAllInBatch(existing);
         productMaterialRepository.flush();
 
-        // Compute new score
-        List<MaterialScoreItem> scoreItems = new ArrayList<>();
-        Map<Long, Material> materialCache = new HashMap<>();
+        // Batch-fetch all materials in one query (fixes N+1)
+        List<Long> materialIds = dto.getMaterials().stream()
+                .map(ProductMaterialRequestDto::getMaterialId)
+                .collect(Collectors.toList());
+        List<Material> materials = materialRepository.findAllById(materialIds);
+        Map<Long, Material> materialCache = materials.stream()
+                .collect(Collectors.toMap(Material::getId, m -> m));
 
-        for (ProductMaterialRequestDto row : dto.getMaterials()) {
-            Material material = materialRepository.findById(row.getMaterialId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + row.getMaterialId()));
-            materialCache.put(material.getId(), material);
-            scoreItems.add(new MaterialScoreItem(material, row.getWeightG()));
+        for (Long mid : materialIds) {
+            if (!materialCache.containsKey(mid)) {
+                throw new ResourceNotFoundException("Material not found with id: " + mid);
+            }
         }
+
+        List<MaterialScoreItem> scoreItems = dto.getMaterials().stream()
+                .map(row -> new MaterialScoreItem(materialCache.get(row.getMaterialId()), row.getWeightG()))
+                .collect(Collectors.toList());
 
         ScoreCalculationResult calcResult = scoringService.calculate(scoreItems);
 
@@ -168,14 +183,15 @@ public class ProductService {
 
         Product updatedProduct = productRepository.save(product);
 
-        for (ProductMaterialRequestDto row : dto.getMaterials()) {
-            ProductMaterial pm = ProductMaterial.builder()
-                    .product(updatedProduct)
-                    .material(materialCache.get(row.getMaterialId()))
-                    .weightG(row.getWeightG())
-                    .build();
-            productMaterialRepository.save(pm);
-        }
+        // Batch-save all ProductMaterial rows (fixes N+1 writes)
+        List<ProductMaterial> newPmList = dto.getMaterials().stream()
+                .map(row -> ProductMaterial.builder()
+                        .product(updatedProduct)
+                        .material(materialCache.get(row.getMaterialId()))
+                        .weightG(row.getWeightG())
+                        .build())
+                .collect(Collectors.toList());
+        productMaterialRepository.saveAll(newPmList);
 
         return toResponseDto(updatedProduct, calcResult);
     }

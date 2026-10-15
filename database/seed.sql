@@ -53,3 +53,8 @@ INSERT INTO materials (
 ('Lithium-ion Battery Cell', 'NMC 18650', 35.0, 10.0, 3, 20.0, 2, 5.0, TRUE, 1, 'Hazardous e-waste requiring specialized hydrometallurgical recycling'),
 ('Paper / Cardboard', 'Corrugated Packaging', 80.0, 60.0, 9, 40.0, 3, 2.0, FALSE, 1, 'Biodegradable and organic packaging material'),
 ('Rubber', 'Vulcanized Natural/Synthetic', 25.0, 5.0, 4, 20.0, 3, 10.0, FALSE, 1, 'Cross-linked elastomer; difficult to devulcanize');
+
+-- 5. Performance Indexes (Speed up most frequent queries)
+CREATE INDEX IF NOT EXISTS idx_products_user_id ON products (user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_product_materials_product_id ON product_materials (product_id);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);

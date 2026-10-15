@@ -14,6 +14,7 @@ import java.time.Instant;
 public class SettingsService {
 
     private final ScoringSettingsRepository repository;
+    private final ScoringService scoringService;
 
     public ScoringSettingsDto getSettings() {
         ScoringSettings settings = repository.findFirstByOrderByIdAsc()
@@ -53,7 +54,12 @@ public class SettingsService {
         settings.setThresholdModerateMax(dto.getThresholdModerateMax());
         settings.setUpdatedAt(Instant.now());
 
-        return toDto(repository.save(settings));
+        ScoringSettingsDto result = toDto(repository.save(settings));
+
+        // Invalidate cached scoring settings so next calculation uses updated values
+        scoringService.evictSettingsCache();
+
+        return result;
     }
 
     private ScoringSettings createInitialDefault() {
