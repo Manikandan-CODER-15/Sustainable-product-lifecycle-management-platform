@@ -5,6 +5,8 @@ import com.plm.entity.ScoringSettings;
 import com.plm.exception.BadRequestException;
 import com.plm.repository.ScoringSettingsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -16,12 +18,14 @@ public class SettingsService {
     private final ScoringSettingsRepository repository;
     private final ScoringService scoringService;
 
+    @Cacheable("settingsDto")
     public ScoringSettingsDto getSettings() {
         ScoringSettings settings = repository.findFirstByOrderByIdAsc()
                 .orElseGet(this::createInitialDefault);
         return toDto(settings);
     }
 
+    @CacheEvict(value = "settingsDto", allEntries = true)
     public ScoringSettingsDto updateSettings(ScoringSettingsDto dto) {
         // Enforce rule: sum of positive weights must equal 1.0
         double sum = dto.getWeightRecyclability()

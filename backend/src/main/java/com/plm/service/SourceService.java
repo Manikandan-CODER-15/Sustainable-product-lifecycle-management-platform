@@ -5,6 +5,8 @@ import com.plm.entity.Source;
 import com.plm.exception.ResourceNotFoundException;
 import com.plm.repository.SourceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,7 @@ public class SourceService {
 
     private final SourceRepository sourceRepository;
 
+    @Cacheable("sources")
     public List<SourceDto> getAllSources() {
         return sourceRepository.findAll().stream()
                 .map(this::toDto)
@@ -28,6 +31,7 @@ public class SourceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Source not found with id: " + id));
     }
 
+    @CacheEvict(value = "sources", allEntries = true)
     public SourceDto createSource(SourceDto dto) {
         Source source = Source.builder()
                 .title(dto.getTitle())
@@ -39,6 +43,7 @@ public class SourceService {
         return toDto(sourceRepository.save(source));
     }
 
+    @CacheEvict(value = "sources", allEntries = true)
     public SourceDto updateSource(Long id, SourceDto dto) {
         Source source = sourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Source not found with id: " + id));
@@ -52,6 +57,7 @@ public class SourceService {
         return toDto(sourceRepository.save(source));
     }
 
+    @CacheEvict(value = "sources", allEntries = true)
     public void deleteSource(Long id) {
         if (!sourceRepository.existsById(id)) {
             throw new ResourceNotFoundException("Source not found with id: " + id);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
+import { invalidateMaterialsCache } from '../api/materialsApi';
 import {
   ShieldCheck,
   Layers,
@@ -130,6 +131,7 @@ const AdminConsole = () => {
         showNotification('Material added successfully');
       }
 
+      invalidateMaterialsCache();
       setMaterialModal(false);
       setEditingMaterial(null);
       loadData();
@@ -142,6 +144,7 @@ const AdminConsole = () => {
     if (!window.confirm('Are you sure you want to delete this material?')) return;
     try {
       await api.delete(`/materials/${id}`);
+      invalidateMaterialsCache();
       showNotification('Material deleted');
       setMaterials(materials.filter((m) => m.id !== id));
     } catch (err) {
@@ -158,6 +161,7 @@ const AdminConsole = () => {
       const res = await api.post('/materials/import', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
+      invalidateMaterialsCache();
       showNotification(`Imported: ${res.data.imported}, Updated: ${res.data.updated}`);
       setCsvFile(null);
       loadData();

@@ -10,7 +10,6 @@ import com.plm.exception.ResourceNotFoundException;
 import com.plm.repository.MaterialRepository;
 import com.plm.repository.ProductMaterialRepository;
 import com.plm.repository.ProductRepository;
-import com.plm.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,19 +28,16 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductMaterialRepository productMaterialRepository;
     private final MaterialRepository materialRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ScoringService scoringService;
 
     public User getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
-            return userRepository.findByEmail(auth.getName())
-                    .orElseThrow(() -> new ResourceNotFoundException("Authenticated user not found"));
+            return userService.getUserByEmail(auth.getName());
         }
-        // Fallback for testing prior to JWT security filter in Phase 8
-        return userRepository.findByEmail("mani@plm.local")
-                .orElseGet(() -> userRepository.findAll().stream().findFirst()
-                        .orElseThrow(() -> new ResourceNotFoundException("No active user found in database")));
+        // Fallback for testing
+        return userService.getUserByEmail("mani@plm.local");
     }
 
     @Transactional
@@ -114,7 +110,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductResponseDto getProductById(Long id) {
         User user = getAuthenticatedUser();
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
         // Ownership check
@@ -135,7 +131,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDto updateProduct(Long id, ProductRequestDto dto) {
         User user = getAuthenticatedUser();
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
         if (!product.getUser().getId().equals(user.getId()) && !user.getRole().name().equals("ADMIN")) {
@@ -199,7 +195,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         User user = getAuthenticatedUser();
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findByIdWithUser(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
         if (!product.getUser().getId().equals(user.getId()) && !user.getRole().name().equals("ADMIN")) {

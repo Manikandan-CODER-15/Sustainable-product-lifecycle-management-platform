@@ -186,4 +186,3 @@ Follow this 5-step walkthrough to demonstrate the system effectively during an e
 | :--- | :--- | :--- | :--- |
 | **ADMIN** | `admin@plm.local` | `Password@123` | Full access: materials CRUD, CSV bulk import, scoring settings, sources, user status |
 | **USER** | `mani@plm.local` | `Password@123` | Product evaluation form, real-time score results, personal history, CSV export |
-"# Sustainable-product-lifecycle-management-platform" 

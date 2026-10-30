@@ -5,7 +5,8 @@ import com.plm.entity.Role;
 import com.plm.entity.User;
 import com.plm.exception.ResourceNotFoundException;
 import com.plm.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,12 +18,19 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    @Cacheable(value = "usersByEmail", key = "#email")
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+    }
+
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = {"usersByEmail", "userDetails"}, allEntries = true)
     public UserResponseDto updateUserStatus(Long id, boolean active) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
@@ -30,6 +38,7 @@ public class UserService {
         return toDto(userRepository.save(user));
     }
 
+    @CacheEvict(value = {"usersByEmail", "userDetails"}, allEntries = true)
     public UserResponseDto updateUserRole(Long id, Role role) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));

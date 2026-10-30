@@ -9,26 +9,27 @@ import com.plm.repository.ScoringSettingsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class ScoringServiceTest {
 
-    @Mock
     private ScoringSettingsRepository scoringSettingsRepository;
-
     private ScoringService scoringService;
     private ScoringSettings settings;
 
     @BeforeEach
     void setUp() {
+        scoringSettingsRepository = (ScoringSettingsRepository) Proxy.newProxyInstance(
+                ScoringSettingsRepository.class.getClassLoader(),
+                new Class<?>[]{ScoringSettingsRepository.class},
+                (proxy, method, args) -> Optional.empty()
+        );
         scoringService = new ScoringService(scoringSettingsRepository);
         settings = scoringService.getDefaultSettings();
     }

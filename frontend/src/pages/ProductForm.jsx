@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/axios';
+import { getMaterials } from '../api/materialsApi';
 import { Calculator, Plus, Trash2, AlertCircle, Scale, Sparkles } from 'lucide-react';
 
 const CATEGORIES = [
@@ -34,8 +35,8 @@ const ProductForm = () => {
   useEffect(() => {
     const fetchMaterials = async () => {
       try {
-        const res = await api.get('/materials');
-        setMaterialsList(res.data);
+        const data = await getMaterials();
+        setMaterialsList(data);
       } catch (err) {
         setError('Failed to load materials catalog. Please refresh.');
       } finally {

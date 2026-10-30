@@ -9,6 +9,8 @@ import com.plm.exception.ResourceNotFoundException;
 import com.plm.repository.MaterialRepository;
 import com.plm.repository.SourceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +27,7 @@ public class MaterialService {
     private final MaterialRepository materialRepository;
     private final SourceRepository sourceRepository;
 
+    @Cacheable("materials")
     public List<MaterialResponseDto> getAllMaterials() {
         return materialRepository.findAllByOrderByNameAsc().stream()
                 .map(this::toResponseDto)
@@ -37,6 +40,7 @@ public class MaterialService {
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + id));
     }
 
+    @CacheEvict(value = "materials", allEntries = true)
     public MaterialResponseDto createMaterial(MaterialRequestDto dto) {
         if (materialRepository.existsByName(dto.getName())) {
             throw new BadRequestException("Material with name '" + dto.getName() + "' already exists");
@@ -65,6 +69,7 @@ public class MaterialService {
         return toResponseDto(materialRepository.save(material));
     }
 
+    @CacheEvict(value = "materials", allEntries = true)
     public MaterialResponseDto updateMaterial(Long id, MaterialRequestDto dto) {
         Material material = materialRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Material not found with id: " + id));
@@ -95,6 +100,7 @@ public class MaterialService {
         return toResponseDto(materialRepository.save(material));
     }
 
+    @CacheEvict(value = "materials", allEntries = true)
     public void deleteMaterial(Long id) {
         if (!materialRepository.existsById(id)) {
             throw new ResourceNotFoundException("Material not found with id: " + id);
@@ -102,6 +108,7 @@ public class MaterialService {
         materialRepository.deleteById(id);
     }
 
+    @CacheEvict(value = "materials", allEntries = true)
     public Map<String, Object> importMaterialsFromCsv(MultipartFile file) {
         if (file.isEmpty()) {
             throw new BadRequestException("Uploaded CSV file is empty");
